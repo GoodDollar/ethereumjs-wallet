@@ -3,7 +3,6 @@ import * as ethUtil from 'ethereumjs-util'
 
 import Wallet from './index'
 
-const scryptsy = require('scrypt.js')
 const utf8 = require('utf8')
 const aesjs = require('aes-js')
 
@@ -213,7 +212,17 @@ function fromKryptoKit(entropy: string, password: string): Wallet {
     const checksum = entropy.slice(30, 46)
 
     const salt = kryptoKitBrokenScryptSeed(encryptedSeed)
-    const aesKey = scryptsy(Buffer.from(password, 'utf8'), salt, 16384, 8, 1, 32)
+    const dklen = 32
+    const n = 16384
+    const r = 8
+    const p = 1
+
+    const aesKey = crypto.scryptSync(Buffer.from(password, 'utf8'), salt, dklen, {
+      cost: n,
+      blockSize: r,
+      parallelization: p,
+      maxmem: 2 ** 52,
+    } as any)
 
     /* FIXME: try to use `crypto` instead of `aesjs`
 

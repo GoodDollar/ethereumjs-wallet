@@ -3,7 +3,6 @@ import * as ethUtil from 'ethereumjs-util'
 
 const bs58check = require('bs58check')
 const randomBytes = require('randombytes')
-const scryptsy = require('scrypt.js')
 const uuidv4 = require('uuid/v4')
 
 // parameters for the toV3() method
@@ -313,15 +312,12 @@ export default class Wallet {
     }
 
     const kdfparams = json.Crypto.KeyHeader.KdfParams
-    const derivedKey = scryptsy(
-      Buffer.from(password),
-      Buffer.from(json.Crypto.Salt, 'hex'),
-      kdfparams.N,
-      kdfparams.R,
-      kdfparams.P,
-      kdfparams.DkLen,
-    )
-
+    const derivedKey = crypto.scryptSync(Buffer.from(password), json.Crypto.Salt, kdfparams.DkLen, {
+      cost: kdfparams.N,
+      blockSize: kdfparams.R,
+      parallelization: kdfparams.P,
+      maxmem: 2 ** 52,
+    } as any)
     const ciphertext = Buffer.from(json.Crypto.CipherText, 'hex')
     const mac = ethUtil.keccak256(Buffer.concat([derivedKey.slice(16, 32), ciphertext]))
     if (mac.toString('hex') !== json.Crypto.MAC) {
@@ -354,13 +350,16 @@ export default class Wallet {
       kdfparams = json.crypto.kdfparams
 
       // FIXME: support progress reporting callback
-      derivedKey = scryptsy(
+      derivedKey = crypto.scryptSync(
         Buffer.from(password),
         Buffer.from(kdfparams.salt, 'hex'),
-        kdfparams.n,
-        kdfparams.r,
-        kdfparams.p,
         kdfparams.dklen,
+        {
+          cost: kdfparams.n,
+          blockSize: kdfparams.r,
+          parallelization: kdfparams.p,
+          maxmem: 2 ** 53 - 1,
+        } as any,
       )
     } else if (json.crypto.kdf === 'pbkdf2') {
       kdfparams = json.crypto.kdfparams
@@ -491,14 +490,12 @@ export default class Wallet {
       case KDFFunctions.Scrypt:
         kdfParams = kdfParamsForScrypt(v3Params)
         // FIXME: support progress reporting callback
-        derivedKey = scryptsy(
-          Buffer.from(password),
-          kdfParams.salt,
-          kdfParams.n,
-          kdfParams.r,
-          kdfParams.p,
-          kdfParams.dklen,
-        )
+        derivedKey = crypto.scryptSync(Buffer.from(password), kdfParams.salt, kdfParams.dklen, {
+          cost: kdfParams.n,
+          blockSize: kdfParams.r,
+          parallelization: kdfParams.p,
+          maxmem: 2 ** 52,
+        } as any)
         break
       default:
         throw new Error('Unsupported kdf')
