@@ -1,5 +1,5 @@
 {
-  "name": "ethereumjs-wallet",
+  "name": "@dmihal/ethereumjs-wallet",
   "version": "0.6.3",
   "description": "Utilities for handling Ethereum keys",
   "main": "dist/index.js",
@@ -29,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ethereumjs/ethereumjs-wallet.git"
+    "url": "https://github.com/dmihal/ethereumjs-wallet.git"
   },
   "keywords": [
     "ethereum",
@@ -39,9 +39,9 @@
   "author": "Alex Beregszaszi <alex@rtfs.hu>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ethereumjs/ethereumjs-wallet/issues"
+    "url": "https://github.com/dmihal/ethereumjs-wallet/issues"
   },
-  "homepage": "https://github.com/ethereumjs/ethereumjs-wallet",
+  "homepage": "https://github.com/dmihal/ethereumjs-wallet",
   "dependencies": {
     "@web3-js/scrypt-shim": "^0.1.0",
     "aes-js": "^3.1.1",
