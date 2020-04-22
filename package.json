@@ -16,6 +16,7 @@
     "format-fix": "ethereumjs-config-format-fix",
     "lint": "ethereumjs-config-lint",
     "lint-fix": "ethereumjs-config-lint-fix",
+    "prepare": "npm run build",
     "pretest": "npm run build",
     "test": "nyc mocha ./test/**/*.ts",
     "tsc": "ethereumjs-config-tsc",
